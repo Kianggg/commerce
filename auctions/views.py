@@ -107,7 +107,11 @@ def listing(request, listing_id):
     listing = AuctionListing.objects.get(id=listing_id)
 
     # Get comments
-    comments = Comment.objects.all()
+    comments = []
+    allComments = Comment.objects.all()
+    for comment in allComments:
+        if comment.listing == listing:
+            comments.append(comment)
 
     # Calculate greatest bid
     bids = Bid.objects.all()
@@ -179,6 +183,23 @@ def bid(request, listing_id):
             })
     else:
         return HttpResponseRedirect(reverse("index"))
+    
+# Leave a comment on a listing
+@login_required
+def comment(request, listing_id):
+    if request.method == "POST":
+
+        # Add the new comment
+        c = Comment(
+            commenter=request.user,
+            text=request.POST.get("commentText"),
+            listing=AuctionListing.objects.get(pk=listing_id))
+        c.save()
+
+        # Return to listing page
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+    else:
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 # Add a listing to a user's watchlist
 @login_required
@@ -229,7 +250,11 @@ def categories(request):
 # View listings by given category
 @login_required
 def category(request, category_query):
-    return render(request, "auctions/categories.html", {
-        "category": category_query,
-        "listings": AuctionListing.objects.all()
+    listings = AuctionListing.objects.all()
+    listingsToShow = []
+    for listing in listings:
+        if listing.category == category_query:
+            listingsToShow.append(listing)
+    return render(request, "auctions/index.html", {
+            "listings": listingsToShow
     })

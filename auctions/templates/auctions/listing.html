@@ -75,4 +75,10 @@
     {% else %}
     <h4>There are no comments on this item yet.</h4>
     {% endif %}
+
+    <form action="{% url 'comment' listing.id %}" method="post">
+        {% csrf_token %}
+        <input id="commentbox" type="text" name="commentText" value="Your comment here - be kind!" label="Leave a comment:">
+        <input type="submit" value="Submit">
+    </form>
 {% endblock %}
