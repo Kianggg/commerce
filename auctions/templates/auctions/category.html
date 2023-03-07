@@ -1,0 +1,23 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if user.is_authenticated %}
+    <h2>{{ category }} Listings</h2>
+
+        <ul>
+            {% for listing in listings %}
+                {% if listing.category == category %}
+                    <li><h3><a href="{% url 'listing' listing.id %}">{{listing.title}}</a></h3><li>
+                    <li><img src="{{ listing.image }}"/></li>
+                    <li>Current Bid: ${{ listing.startingBid }}</li>
+                    <li>{{ listing.description }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+    {% else %}
+    <h2>Please <a class="nav-link" href="{% url 'login' %}">Log In</a> or <a class="nav-link" href="{% url 'register' %}">Register an account</a> to view listings!</h2>
+    {% endif %}
+
+{% endblock %}

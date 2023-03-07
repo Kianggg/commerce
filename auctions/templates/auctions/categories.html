@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if user.is_authenticated %}
+    <h2>Browse by Category</h2>
+
+        <ul>
+            {% for category in categories %}
+                <li><a class="nav-link" href="{% url 'category' category %}">{{ category }}</a><li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+    <h2>Please <a class="nav-link" href="{% url 'login' %}">Log In</a> or <a class="nav-link" href="{% url 'register' %}">Register an account</a> to view listings!</h2>
+    {% endif %}
+
+{% endblock %}

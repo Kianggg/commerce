@@ -3,14 +3,16 @@
 {% block body %}
 
     {% if user.is_authenticated %}
-    <h2>Active Listings</h2>
+    <h2>Watchlist</h2>
 
     <ul>
         {% for listing in listings %}
-            <li><h3><a href="{% url 'listing' listing.id %}">{{listing.title}}</a></h3><li>
-            <li><img src="{{ listing.image }}"/></li>
-            <li>Current Bid: ${{ listing.startingBid }}</li>
-            <li>{{ listing.description }}</li>
+            {% if user in listing.watchlistUsers.all %}
+                <li><h3><a href="{% url 'listing' listing.id %}">{{listing.title}}</a></h3><li>
+                <li><img src="{{ listing.image }}"/></li>
+                <li>Current Bid: ${{ listing.startingBid }}</li>
+                <li>{{ listing.description }}</li>
+            {% endif %}
         {% endfor %}
     </ul>
     {% else %}

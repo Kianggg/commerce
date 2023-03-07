@@ -4,10 +4,75 @@
     <h2>{{ listing.title }}</h2>
 
     <ul>
+        <li>Posted by: {{ listing.poster }}</li>
         <li><img src="{{ listing.image }}"/></li>
-        <li><strong>Current Bid: ${{ listing.startingBid }}</strong></li>
+        <li><strong>Current Bid: {{ winningBid }}</strong></li>
         <li>Starting Bid: ${{ listing.startingBid }}</li>
         <li>Category: {{ listing.category }}</li>
         <li>{{ listing.description }}</li>
+        <br>
     </ul>
+
+    {% if user in listing.watchlistUsers.all %}
+    <form action="{% url 'watch' listing.id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Add to Watchlist" disabled>
+    </form>
+    <br>
+    {% else %}
+    <form action="{% url 'watch' listing.id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Add to Watchlist">
+    </form>
+    <br>
+    {% endif %}
+
+    {% if listing.poster != user %}
+        {% if listing.active == True %}
+            <h3>Place a Bid:<h3>
+            {% if error %}
+                <div style="color:Tomato;">{{ error }}</div>
+            {% endif %}
+            {% if message %}
+                <div style="color:MediumSeaGreen;">{{ message }}</div>
+            {% endif %}
+            <form action="{% url 'bid' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="number" name="bidAmount" value="0" label="Your bid: $" min="0" step="1">
+                <input type="submit" value="Bid on this Item!">
+            </form>
+            {% else %}
+            <h2>This listing is CLOSED.<h2>
+            {% if winner %}
+                <div>The auction winner is: {{ winner }}!</div>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% if listing.active == True %}
+            <form action="{% url 'close' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="End this Auction">
+            </form>
+        {% else %}
+            <h2>This listing is CLOSED.<h2>
+        {% if winner %}
+            <h3>The auction winner is: {{ winner }}!</h3>
+        {% endif %}
+        {% endif %}       
+    {% endif %}
+
+    <br>
+    <h3>Comments:</h3>
+    <br>
+    {% if comments|length > 0 %}
+    <ul>
+        {% for comment in comments %}
+            <li><h4>{{ comment.commenter }}</h4><li>
+            <li>{{ comment.text }}</li>
+            <br>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <h4>There are no comments on this item yet.</h4>
+    {% endif %}
 {% endblock %}
